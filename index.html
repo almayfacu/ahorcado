@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ahorcado para mi amor</title>
+  <title>Ahorcado para Alma</title>
+  <!-- FUENTE: Poppins (modificación de tipografía) -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -13,7 +15,8 @@
       margin: 0;
       padding: 0;
       background: linear-gradient(135deg, #ffdce0, #e0f7ff);
-      font-family: 'Comic Sans MS', cursive;
+      /* CAMBIO: fuente moderna, legible en desktop y móvil, sin cursivas ni rústica */
+      font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -27,6 +30,7 @@
       color: #b983ff;
       text-shadow: 2px 2px #fff;
       font-size: 2.2rem;
+      font-weight: 600;
     }
 
     #hangman {
@@ -185,7 +189,7 @@
 </head>
 <body>
 
-  <h1>Juego del Ahorcado 💕</h1>
+  <h1>Descubri la palabra, para desbloquear otra razón</h1>
 
   <svg id="hangman">
     <line x1="10" y1="240" x2="150" y2="240" class="part" style="visibility: visible;" />
@@ -247,6 +251,19 @@
       });
     }
 
+    // *** MODIFICACIÓN: reproducción exclusiva por letra ***
+    function playLetterSound(isCorrect) {
+      // Cortar cualquier sonido previo de letras (correcto/incorrecto)
+      [correctSound, wrongSound].forEach(s => {
+        try { s.pause(); s.currentTime = 0; } catch(e) {}
+      });
+      // Elegir y reproducir el sonido de esta letra
+      const s = isCorrect ? correctSound : wrongSound;
+      s.currentTime = 0; // garantiza que suene aunque se repita rápido
+      const p = s.play();
+      if (p && p.catch) p.catch(() => {}); // por si el navegador bloquea algo
+    }
+
     function handleGuess(letter, button) {
       button.disabled = true;
       let found = false;
@@ -258,10 +275,10 @@
         }
       }
 
-      if (found) {
-        correctSound.play();
-      } else {
-        wrongSound.play();
+      // usar reproducción exclusiva
+      playLetterSound(found);
+
+      if (!found) {
         revealPart(mistakes);
         mistakes++;
       }
